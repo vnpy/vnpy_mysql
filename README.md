@@ -14,12 +14,12 @@
 
 基于peewee开发的Mysql数据库接口。
 
-由于peewee对mysql的限制，目前存在以下问题时。如不影响使用可以忽略，当影响使用时，可按照以下方式手动修改mysql数据库表来解决。
+由于peewee对Mysql的限制，目前存在以下问题。如不影响使用可以忽略，当影响使用时，可按照以下方式手动修改mysql数据库表来解决。
 
 - 保存tick数据时，保存数据的时间精确度只能精确到秒
 
 ```
-# 首先进入mysql数据库
+# 首先进入Mysql数据库
 # 选择vnpy数据库
 use vnpy;
 # 修改dbtickdata表datetime列的数据格式
@@ -29,7 +29,7 @@ ALTER TABLE `dbtickdata` MODIFY COLUMN `datetime` DATETIME(3);
 - 部分系统对大小写不明敏感
 
 ```
-# 首先进入mysql数据库
+# 首先进入Mysql数据库
 # 选择vnpy数据库
 use vnpy;
 # 修改三张表symbol字段BINARY属性
