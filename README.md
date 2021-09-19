@@ -12,59 +12,57 @@
 
 ## 说明
 
-基于peewee开发的Mysql数据库接口。
+基于peewee开发的MySQL数据库接口。
 
-由于peewee对Mysql的限制，目前存在以下问题。如不影响使用可以忽略，当影响使用时，可按照以下方式手动修改mysql数据库表来解决。
+## 使用
 
-- 保存tick数据时，保存数据的时间精确度只能精确到秒
+### 全局配置
+
+在vn.py中使用MySQL时，需要在全局配置中填写以下字段信息：
+
+|名称|含义|必填|举例|
+|---------|----|---|---|
+|database.name|名称|是|mysql|
+|database.host|地址|是|localhost|
+|database.port|端口|是|3306|
+|database.database|实例|是|vnpy|
+|database.user|用户名|是|root|
+|database.password|密码|是|123456|
+
+### 创建实例（Schema)
+
+vn.py不会主动为MySQL数据库创建实例，所以使用前请确保database.database字段中填写的的数据库实例已经创建了。
+
+若实例尚未创建，可以使用【MySQL Workbench】客户端的【new_schema】进行操作。
+
+### Tick时间戳的毫秒支持
+
+由于peewee的建表功能限制，默认情况下在保存tick数据时，时间精确度只能精确到秒。如果影响使用，可按照以下方式手动修改MySQL数据表来解决：
 
 ```
-# 首先进入Mysql数据库
-# 选择vnpy数据库
+# 用MySQL命令行工具连接数据库
+
+# 选择数据实例
 use vnpy;
+
 # 修改dbtickdata表datetime列的数据格式
 ALTER TABLE `dbtickdata` MODIFY COLUMN `datetime` DATETIME(3);
 ```
 
-- 部分系统对大小写不明敏感
+### 字符串大小写敏感支持
+
+由于peewee的建表功能限制，默认情况下在保存合约代码的【symbol】字段时，无法区分字符串大小写。如果影响使用，可按照以下方式手动修改MySQL数据表来解决：
 
 ```
-# 首先进入Mysql数据库
-# 选择vnpy数据库
+# 用MySQL命令行工具连接数据库
+
+# 选择数据实例
 use vnpy;
-# 修改三张表symbol字段BINARY属性
+
+# 修改三张表symbol字段的BINARY属性
 ALTER TABLE `dbbaroverview` MODIFY COLUMN `symbol` VARCHAR(45) BINARY;
 
 ALTER TABLE `dbbardata` MODIFY COLUMN `symbol` VARCHAR(45) BINARY;
 
 ALTER TABLE `dbtickdata` MODIFY COLUMN `symbol` VARCHAR(45) BINARY;
 ```
-
-## 使用
-
-MySQL在VN Trader中配置时，需要填写以下字段信息：
-
-| 字段名            | 值 |
-|---------           |---- |
-|database.driver     | "mysql" |
-|database.host       | 地址 |
-|database.port       | 端口 |
-|database.database   | 数据库名 |
-|database.user       | 用户名 |
-|database.password   | 密码 |
- 
-MySQL的例子如下所示：
-
-| 字段名            | 值 |
-|---------           |----  |
-|database.driver     | mysql |
-|database.host       | localhost |
-|database.port       | 3306 |
-|database.database   | vnpy |
-|database.user       | root |
-|database.password   | .... |
-
-请注意，vn.py不会主动为关系型数据库创建数据库，所以请确保你所填的database.database字段对应的数据库已经创建好了。若未创建数据库，请手动连上数据库并运行该命令：
-```
-create database <你填的database.database>;
-``` 
