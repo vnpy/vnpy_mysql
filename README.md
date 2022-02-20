@@ -1,4 +1,4 @@
-# vn.py框架的MySQL数据库接口
+# VeighNa框架的MySQL数据库接口
 
 <p align="center">
   <img src ="https://vnpy.oss-cn-shanghai.aliyuncs.com/vnpy-logo.png"/>
@@ -18,7 +18,7 @@
 
 ### 全局配置
 
-在vn.py中使用MySQL时，需要在全局配置中填写以下字段信息：
+在VeighNa中使用MySQL时，需要在全局配置中填写以下字段信息：
 
 |名称|含义|必填|举例|
 |---------|----|---|---|
@@ -31,7 +31,7 @@
 
 ### 创建实例（Schema)
 
-vn.py不会主动为MySQL数据库创建实例，所以使用前请确保database.database字段中填写的的数据库实例已经创建了。
+VeighNa不会主动为MySQL数据库创建实例，所以使用前请确保database.database字段中填写的的数据库实例已经创建了。
 
 若实例尚未创建，可以使用【MySQL Workbench】客户端的【new_schema】进行操作。
 
