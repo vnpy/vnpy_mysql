@@ -131,6 +131,12 @@ class DbBarOverview(Model):
 class MysqlDatabase(BaseDatabase):
     """Mysql数据库接口"""
 
+    def __new__(cls, *args, **kwargs):
+        """保持单例模式，由于db是单例"""
+        if not hasattr(cls, '_instance'):
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
+
     def __init__(self) -> None:
         """"""
         self.db = db
