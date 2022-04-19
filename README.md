@@ -35,19 +35,6 @@ VeighNa不会主动为MySQL数据库创建实例，所以使用前请确保datab
 
 若实例尚未创建，可以使用【MySQL Workbench】客户端的【new_schema】进行操作。
 
-### Tick时间戳的毫秒支持
-
-由于peewee的建表功能限制，默认情况下在保存tick数据时，时间精确度只能精确到秒。如果影响使用，可按照以下方式手动修改MySQL数据表来解决：
-
-```
-# 用MySQL命令行工具连接数据库
-
-# 选择数据实例
-use vnpy;
-
-# 修改dbtickdata表datetime列的数据格式
-ALTER TABLE `dbtickdata` MODIFY COLUMN `datetime` DATETIME(3);
-```
 
 ### 字符串大小写敏感支持
 
