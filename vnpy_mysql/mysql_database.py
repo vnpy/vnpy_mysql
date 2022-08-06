@@ -34,6 +34,12 @@ db: PeeweeMySQLDatabase = PeeweeMySQLDatabase(
 )
 
 
+class DateTimeMillisecondField(DateTimeField):
+    # 毫秒支持
+    def get_modifiers(self):
+        return [3]
+
+
 class DbBarData(Model):
     """K线数据表映射对象"""
 
@@ -64,7 +70,7 @@ class DbTickData(Model):
 
     symbol: str = CharField()
     exchange: str = CharField()
-    datetime: datetime = DateTimeField()
+    datetime: datetime = DateTimeMillisecondField()
 
     name: str = CharField()
     volume: float = FloatField()
