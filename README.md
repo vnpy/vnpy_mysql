@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-    <img src ="https://img.shields.io/badge/version-1.0.0-blueviolet.svg"/>
+    <img src ="https://img.shields.io/badge/version-1.0.2-blueviolet.svg"/>
     <img src ="https://img.shields.io/badge/platform-windows|linux|macos-yellow.svg"/>
     <img src ="https://img.shields.io/badge/python-3.7|3.8|3.9|3.10-blue.svg" />
 </p>
@@ -46,8 +46,10 @@ VeighNa不会主动为MySQL数据库创建实例，所以使用前请确保datab
 # 选择数据实例
 use vnpy;
 
-# 修改三张表symbol字段的BINARY属性
+# 修改四张表symbol字段的BINARY属性
 ALTER TABLE `dbbaroverview` MODIFY COLUMN `symbol` VARCHAR(45) BINARY;
+
+ALTER TABLE `dbtickoverview` MODIFY COLUMN `symbol` VARCHAR(45) BINARY;
 
 ALTER TABLE `dbbardata` MODIFY COLUMN `symbol` VARCHAR(45) BINARY;
 

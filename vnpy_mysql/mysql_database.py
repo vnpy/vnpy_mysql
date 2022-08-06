@@ -36,8 +36,10 @@ db: PeeweeMySQLDatabase = PeeweeMySQLDatabase(
 
 
 class DateTimeMillisecondField(DateTimeField):
-    # 毫秒支持
+    """支持毫秒的日期时间戳字段"""
+
     def get_modifiers(self):
+        """毫秒支持"""
         return [3]
 
 
