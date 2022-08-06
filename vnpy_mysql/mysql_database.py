@@ -366,7 +366,7 @@ class MysqlDatabase(BaseDatabase):
             self.init_bar_overview()
 
         s: ModelSelect = DbBarOverview.select()
-        overviews = []
+        overviews: List[BarOverview] = []
         for overview in s:
             overview.exchange = Exchange(overview.exchange)
             overview.interval = Interval(overview.interval)
