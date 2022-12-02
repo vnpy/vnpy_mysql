@@ -284,9 +284,6 @@ class MysqlDatabase(BaseDatabase):
         end: datetime
     ) -> List[BarData]:
         """"""
-        start: datetime = start.replace(hour=0, minute=0, second=0)
-        end: datetime = end.replace(hour=23, minute=59, second=59)
-
         s: ModelSelect = (
             DbBarData.select().where(
                 (DbBarData.symbol == symbol)
@@ -325,9 +322,6 @@ class MysqlDatabase(BaseDatabase):
         end: datetime
     ) -> List[TickData]:
         """读取TICK数据"""
-        start: datetime = start.replace(hour=0, minute=0, second=0)
-        end: datetime = end.replace(hour=23, minute=59, second=59)
-
         s: ModelSelect = (
             DbTickData.select().where(
                 (DbTickData.symbol == symbol)
