@@ -13,6 +13,7 @@ from peewee import (
     chunked,
     fn
 )
+from playhouse.shortcuts import ReconnectMixin
 
 from vnpy.trader.constant import Exchange, Interval
 from vnpy.trader.object import BarData, TickData
@@ -26,7 +27,11 @@ from vnpy.trader.database import (
 from vnpy.trader.setting import SETTINGS
 
 
-db: PeeweeMySQLDatabase = PeeweeMySQLDatabase(
+class ReconnectMySQLDatabase(ReconnectMixin, PeeweeMySQLDatabase):
+    """带有重连混入的MySQL数据库类"""
+    pass
+
+db = ReconnectMySQLDatabase(
     database=SETTINGS["database.database"],
     user=SETTINGS["database.user"],
     password=SETTINGS["database.password"],
