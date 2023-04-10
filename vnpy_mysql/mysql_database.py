@@ -5,7 +5,8 @@ from peewee import (
     AutoField,
     CharField,
     DateTimeField,
-    FloatField, IntegerField,
+    DoubleField,
+    IntegerField,
     Model,
     MySQLDatabase as PeeweeMySQLDatabase,
     ModelSelect,
@@ -53,13 +54,13 @@ class DbBarData(Model):
     datetime: datetime = DateTimeField()
     interval: str = CharField()
 
-    volume: float = FloatField()
-    turnover: float = FloatField()
-    open_interest: float = FloatField()
-    open_price: float = FloatField()
-    high_price: float = FloatField()
-    low_price: float = FloatField()
-    close_price: float = FloatField()
+    volume: float = DoubleField()
+    turnover: float = DoubleField()
+    open_interest: float = DoubleField()
+    open_price: float = DoubleField()
+    high_price: float = DoubleField()
+    low_price: float = DoubleField()
+    close_price: float = DoubleField()
 
     class Meta:
         database: PeeweeMySQLDatabase = db
@@ -76,44 +77,44 @@ class DbTickData(Model):
     datetime: datetime = DateTimeMillisecondField()
 
     name: str = CharField()
-    volume: float = FloatField()
-    turnover: float = FloatField()
-    open_interest: float = FloatField()
-    last_price: float = FloatField()
-    last_volume: float = FloatField()
-    limit_up: float = FloatField()
-    limit_down: float = FloatField()
+    volume: float = DoubleField()
+    turnover: float = DoubleField()
+    open_interest: float = DoubleField()
+    last_price: float = DoubleField()
+    last_volume: float = DoubleField()
+    limit_up: float = DoubleField()
+    limit_down: float = DoubleField()
 
-    open_price: float = FloatField()
-    high_price: float = FloatField()
-    low_price: float = FloatField()
-    pre_close: float = FloatField()
+    open_price: float = DoubleField()
+    high_price: float = DoubleField()
+    low_price: float = DoubleField()
+    pre_close: float = DoubleField()
 
-    bid_price_1: float = FloatField()
-    bid_price_2: float = FloatField(null=True)
-    bid_price_3: float = FloatField(null=True)
-    bid_price_4: float = FloatField(null=True)
-    bid_price_5: float = FloatField(null=True)
+    bid_price_1: float = DoubleField()
+    bid_price_2: float = DoubleField(null=True)
+    bid_price_3: float = DoubleField(null=True)
+    bid_price_4: float = DoubleField(null=True)
+    bid_price_5: float = DoubleField(null=True)
 
-    ask_price_1: float = FloatField()
-    ask_price_2: float = FloatField(null=True)
-    ask_price_3: float = FloatField(null=True)
-    ask_price_4: float = FloatField(null=True)
-    ask_price_5: float = FloatField(null=True)
+    ask_price_1: float = DoubleField()
+    ask_price_2: float = DoubleField(null=True)
+    ask_price_3: float = DoubleField(null=True)
+    ask_price_4: float = DoubleField(null=True)
+    ask_price_5: float = DoubleField(null=True)
 
-    bid_volume_1: float = FloatField()
-    bid_volume_2: float = FloatField(null=True)
-    bid_volume_3: float = FloatField(null=True)
-    bid_volume_4: float = FloatField(null=True)
-    bid_volume_5: float = FloatField(null=True)
+    bid_volume_1: float = DoubleField()
+    bid_volume_2: float = DoubleField(null=True)
+    bid_volume_3: float = DoubleField(null=True)
+    bid_volume_4: float = DoubleField(null=True)
+    bid_volume_5: float = DoubleField(null=True)
 
-    ask_volume_1: float = FloatField()
-    ask_volume_2: float = FloatField(null=True)
-    ask_volume_3: float = FloatField(null=True)
-    ask_volume_4: float = FloatField(null=True)
-    ask_volume_5: float = FloatField(null=True)
+    ask_volume_1: float = DoubleField()
+    ask_volume_2: float = DoubleField(null=True)
+    ask_volume_3: float = DoubleField(null=True)
+    ask_volume_4: float = DoubleField(null=True)
+    ask_volume_5: float = DoubleField(null=True)
 
-    localtime: datetime = DateTimeField(null=True)
+    localtime: datetime = DateTimeMillisecondField(null=True)
 
     class Meta:
         database: PeeweeMySQLDatabase = db
