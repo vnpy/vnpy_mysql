@@ -166,7 +166,10 @@ class MysqlDatabase(BaseDatabase):
         """"""
         self.db: PeeweeMySQLDatabase = db
         self.db.connect()
-        self.db.create_tables([DbBarData, DbTickData, DbBarOverview, DbTickOverview])
+
+        # 如果数据表不存在，则执行创建初始化
+        if not DbBarData.table_exists():
+            self.db.create_tables([DbBarData, DbTickData, DbBarOverview, DbTickOverview])
 
     def save_bar_data(self, bars: List[BarData], stream: bool = False) -> bool:
         """保存K线数据"""
