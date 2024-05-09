@@ -501,3 +501,61 @@ class MysqlDatabase(BaseDatabase):
             overview.end = end_bar.datetime
 
             overview.save()
+
+    def update_bar_overview(self) -> None:
+        """更新K线汇总信息，replace方式"""
+        s: ModelSelect = (
+            DbBarData.select(
+                DbBarData.symbol,
+                DbBarData.exchange,
+                DbBarData.interval,
+                fn.COUNT(DbBarData.id).alias("count")
+            ).group_by(
+                DbBarData.symbol,
+                DbBarData.exchange,
+                DbBarData.interval
+            )
+        )
+
+        with self.db.atomic():
+            for data in s:
+                overview: DbBarOverview = DbBarOverview.get_or_none(
+                    DbBarOverview.symbol == data.symbol,
+                    DbBarOverview.exchange == data.exchange,
+                    DbBarOverview.interval == data.interval
+                )
+
+                if not overview:
+                    overview: DbBarOverview = DbBarOverview()
+                    overview.symbol = data.symbol
+                    overview.exchange = data.exchange
+                    overview.interval = data.interval
+
+                overview.count = data.count
+
+                start_bar: DbBarData = (
+                    DbBarData.select()
+                    .where(
+                        (DbBarData.symbol == data.symbol)
+                        & (DbBarData.exchange == data.exchange)
+                        & (DbBarData.interval == data.interval)
+                    )
+                    .order_by(DbBarData.datetime.asc())
+                    .first()
+                )
+                overview.start = start_bar.datetime
+
+                end_bar: DbBarData = (
+                    DbBarData.select()
+                    .where(
+                        (DbBarData.symbol == data.symbol)
+                        & (DbBarData.exchange == data.exchange)
+                        & (DbBarData.interval == data.interval)
+                    )
+                    .order_by(DbBarData.datetime.desc())
+                    .first()
+                )
+                overview.end = end_bar.datetime
+
+                overview.save()
+
