@@ -72,6 +72,50 @@ class DbBarData(Model):
         indexes: tuple = ((("symbol", "exchange", "interval", "datetime"), True),)
 
 
+class DbTradeData(Model):
+    id: AutoField = AutoField()
+    symbol: str = CharField()
+    exchange: str = CharField()
+    datetime: datetime = DateTimeField()
+    volume: float = DoubleField()
+    direction: str = CharField()
+    offset: str = CharField()
+    price: float = DoubleField()
+    orderid: str = CharField()
+    tradeid: str = CharField()
+    vt_symbol: str = CharField()
+    vt_orderid: str = CharField()
+    vt_tradeid: str = CharField()
+
+    class Meta:
+        database: PeeweeMySQLDatabase = db
+        indexes: tuple = ((("symbol", "exchange", "datetime"), True),)
+
+class DbOrderData(Model):
+    """订单提交记录表"""
+    id: AutoField = AutoField()
+    symbol: str = CharField()
+    exchange: str = CharField()
+    tradeid: str = CharField()
+    datetime: datetime = DateTimeField()
+    orderid: str = CharField()
+    type: str = CharField()
+    is_active: str = CharField()
+    direction: str = CharField()
+    offset: str = CharField()
+    price: float = DoubleField()
+    volume: float = DoubleField()
+    traded: int = IntegerField()
+    status: str = CharField()
+    reference: str = CharField()
+    vt_symbol: str = CharField()
+    vt_orderid: str = CharField()
+
+    class Meta:
+        database: PeeweeMySQLDatabase = db
+        indexes: tuple = ((("symbol", "exchange", "datetime"), True),)
+
+
 class DbTickData(Model):
     """TICK数据表映射对象"""
 
@@ -282,6 +326,56 @@ class MysqlDatabase(BaseDatabase):
 
         overview.save()
 
+        return True
+
+    def save_order_data(self, orders: List[OrderData], stream: bool = False) -> bool:
+
+        """保存Order数据"""
+        # 读取主键参数
+        order: OrderData = orders[0]
+        symbol: str = order.symbol
+        exchange: Exchange = order.exchange
+
+        # 将OrData数据转换为字典，并调整时区
+        data: list = []
+
+        for order in orders:
+            order.datetime = convert_tz(order.datetime)
+            d: dict = order.__dict__
+            d["exchange"] = d["exchange"].value
+            d["is_active"] = order.is_active()
+            d.pop("gateway_name")
+            data.append(d)
+
+        # 使用upsert操作将数据更新到数据库中
+        with self.db.atomic():
+            for c in chunked(data, 50):
+                DbOrderData.insert_many(c).on_conflict_replace().execute()
+        return True
+
+    def save_trade_data(self, trades: List[TradeData], stream: bool = False) -> bool:
+
+        """保存Trade数据"""
+        # 读取主键参数
+        trade: TradeData = trades[0]
+        symbol: str = trade.symbol
+        exchange: Exchange = trade.exchange
+
+        # 将OrData数据转换为字典，并调整时区
+        data: list = []
+
+        for trade in trades:
+            trade.datetime = convert_tz(trade.datetime)
+
+            d: dict = trade.__dict__
+            d["exchange"] = d["exchange"].value
+            d.pop("gateway_name")
+            data.append(d)
+
+        # 使用upsert操作将数据更新到数据库中
+        with self.db.atomic():
+            for c in chunked(data, 50):
+                DbTradeData.insert_many(c).on_conflict_replace().execute()
         return True
 
     def load_bar_data(
