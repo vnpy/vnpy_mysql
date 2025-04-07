@@ -11,7 +11,9 @@ from peewee import (
     ModelSelect,
     ModelDelete,
     chunked,
-    fn
+    fn,
+    Asc,
+    Desc
 )
 from playhouse.shortcuts import ReconnectMixin
 
@@ -43,7 +45,7 @@ db = ReconnectMySQLDatabase(
 class DateTimeMillisecondField(DateTimeField):
     """支持毫秒的日期时间戳字段"""
 
-    def get_modifiers(self):
+    def get_modifiers(self) -> list:
         """毫秒支持"""
         return [3]
 
@@ -118,7 +120,7 @@ class DbTickData(Model):
     ask_volume_4: float = DoubleField(null=True)
     ask_volume_5: float = DoubleField(null=True)
 
-    localtime: datetime = DateTimeMillisecondField(null=True)
+    localtime: DateTimeField = DateTimeMillisecondField(null=True)
 
     class Meta:
         database: PeeweeMySQLDatabase = db
@@ -204,7 +206,7 @@ class MysqlDatabase(BaseDatabase):
         )
 
         if not overview:
-            overview: DbBarOverview = DbBarOverview()
+            overview = DbBarOverview()
             overview.symbol = symbol
             overview.exchange = exchange.value
             overview.interval = interval.value
@@ -260,7 +262,7 @@ class MysqlDatabase(BaseDatabase):
         )
 
         if not overview:
-            overview: DbTickOverview = DbTickOverview()
+            overview = DbTickOverview()
             overview.symbol = symbol
             overview.exchange = exchange.value
             overview.start = ticks[0].datetime
@@ -482,7 +484,7 @@ class MysqlDatabase(BaseDatabase):
                     & (DbBarData.exchange == data.exchange)
                     & (DbBarData.interval == data.interval)
                 )
-                .order_by(DbBarData.datetime.asc())
+                .order_by(Asc(DbBarData.datetime))
                 .first()
             )
             overview.start = start_bar.datetime
@@ -494,7 +496,7 @@ class MysqlDatabase(BaseDatabase):
                     & (DbBarData.exchange == data.exchange)
                     & (DbBarData.interval == data.interval)
                 )
-                .order_by(DbBarData.datetime.desc())
+                .order_by(Desc(DbBarData.datetime))
                 .first()
             )
             overview.end = end_bar.datetime
