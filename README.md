@@ -5,9 +5,9 @@
 </p>
 
 <p align="center">
-    <img src ="https://img.shields.io/badge/version-1.0.5-blueviolet.svg"/>
+    <img src ="https://img.shields.io/badge/version-1.1.0-blueviolet.svg"/>
     <img src ="https://img.shields.io/badge/platform-windows|linux|macos-yellow.svg"/>
-    <img src ="https://img.shields.io/badge/python-3.8|3.9|3.10|3.11|3.12-blue.svg" />
+    <img src ="https://img.shields.io/badge/python-3.10|3.11|3.12|3.13-blue.svg" />
 </p>
 
 ## 说明
@@ -29,7 +29,7 @@
 |database.user|用户名|是|root|
 |database.password|密码|是|123456|
 
-### 创建实例（Schema)
+### 创建实例（Schema）
 
 VeighNa不会主动为MySQL数据库创建实例，所以使用前请确保database.database字段中填写的的数据库实例已经创建了。
 
