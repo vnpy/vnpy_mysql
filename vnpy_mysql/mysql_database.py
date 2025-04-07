@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from peewee import (
     AutoField,
@@ -171,7 +170,7 @@ class MysqlDatabase(BaseDatabase):
         if not DbBarData.table_exists():
             self.db.create_tables([DbBarData, DbTickData, DbBarOverview, DbTickOverview])
 
-    def save_bar_data(self, bars: List[BarData], stream: bool = False) -> bool:
+    def save_bar_data(self, bars: list[BarData], stream: bool = False) -> bool:
         """保存K线数据"""
         # 读取主键参数
         bar: BarData = bars[0]
@@ -230,7 +229,7 @@ class MysqlDatabase(BaseDatabase):
 
         return True
 
-    def save_tick_data(self, ticks: List[TickData], stream: bool = False) -> bool:
+    def save_tick_data(self, ticks: list[TickData], stream: bool = False) -> bool:
         """保存TICK数据"""
         # 读取主键参数
         tick: TickData = ticks[0]
@@ -291,7 +290,7 @@ class MysqlDatabase(BaseDatabase):
         interval: Interval,
         start: datetime,
         end: datetime
-    ) -> List[BarData]:
+    ) -> list[BarData]:
         """"""
         s: ModelSelect = (
             DbBarData.select().where(
@@ -303,7 +302,7 @@ class MysqlDatabase(BaseDatabase):
             ).order_by(DbBarData.datetime)
         )
 
-        bars: List[BarData] = []
+        bars: list[BarData] = []
         for db_bar in s:
             bar: BarData = BarData(
                 symbol=db_bar.symbol,
@@ -329,7 +328,7 @@ class MysqlDatabase(BaseDatabase):
         exchange: Exchange,
         start: datetime,
         end: datetime
-    ) -> List[TickData]:
+    ) -> list[TickData]:
         """读取TICK数据"""
         s: ModelSelect = (
             DbTickData.select().where(
@@ -340,7 +339,7 @@ class MysqlDatabase(BaseDatabase):
             ).order_by(DbTickData.datetime)
         )
 
-        ticks: List[TickData] = []
+        ticks: list[TickData] = []
         for db_tick in s:
             tick: TickData = TickData(
                 symbol=db_tick.symbol,
@@ -429,7 +428,7 @@ class MysqlDatabase(BaseDatabase):
         d2.execute()
         return count
 
-    def get_bar_overview(self) -> List[BarOverview]:
+    def get_bar_overview(self) -> list[BarOverview]:
         """查询数据库中的K线汇总信息"""
         # 如果已有K线，但缺失汇总信息，则执行初始化
         data_count: int = DbBarData.select().count()
@@ -438,14 +437,14 @@ class MysqlDatabase(BaseDatabase):
             self.init_bar_overview()
 
         s: ModelSelect = DbBarOverview.select()
-        overviews: List[BarOverview] = []
+        overviews: list[BarOverview] = []
         for overview in s:
             overview.exchange = Exchange(overview.exchange)
             overview.interval = Interval(overview.interval)
             overviews.append(overview)
         return overviews
 
-    def get_tick_overview(self) -> List[TickOverview]:
+    def get_tick_overview(self) -> list[TickOverview]:
         """查询数据库中的Tick汇总信息"""
         s: ModelSelect = DbTickOverview.select()
         overviews: list = []
