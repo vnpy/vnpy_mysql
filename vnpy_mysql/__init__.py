@@ -21,11 +21,10 @@
 # SOFTWARE.
 
 
-import importlib_metadata
-
 from .mysql_database import MysqlDatabase as Database
 
-try:
-    __version__ = importlib_metadata.version("vnpy_mysql")
-except importlib_metadata.PackageNotFoundError:
-    __version__ = "dev"
+
+__all__ = ["Database"]
+
+
+__version__ = "1.1.0"
