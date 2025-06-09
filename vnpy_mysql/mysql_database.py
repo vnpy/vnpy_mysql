@@ -55,18 +55,18 @@ class DbBarData(Model):
 
     id: AutoField = AutoField()
 
-    symbol: str = CharField()
-    exchange: str = CharField()
-    datetime: datetime = DateTimeField()
-    interval: str = CharField()
+    symbol: CharField = CharField()
+    exchange: CharField = CharField()
+    datetime: DateTimeField = DateTimeField()
+    interval: CharField = CharField()
 
-    volume: float = DoubleField()
-    turnover: float = DoubleField()
-    open_interest: float = DoubleField()
-    open_price: float = DoubleField()
-    high_price: float = DoubleField()
-    low_price: float = DoubleField()
-    close_price: float = DoubleField()
+    volume: DoubleField = DoubleField()
+    turnover: DoubleField = DoubleField()
+    open_interest: DoubleField = DoubleField()
+    open_price: DoubleField = DoubleField()
+    high_price: DoubleField = DoubleField()
+    low_price: DoubleField = DoubleField()
+    close_price: DoubleField = DoubleField()
 
     class Meta:
         database: PeeweeMySQLDatabase = db
@@ -78,47 +78,47 @@ class DbTickData(Model):
 
     id: AutoField = AutoField()
 
-    symbol: str = CharField()
-    exchange: str = CharField()
-    datetime: datetime = DateTimeMillisecondField()
+    symbol: CharField = CharField()
+    exchange: CharField = CharField()
+    datetime: DateTimeField = DateTimeMillisecondField()
 
-    name: str = CharField()
-    volume: float = DoubleField()
-    turnover: float = DoubleField()
-    open_interest: float = DoubleField()
-    last_price: float = DoubleField()
-    last_volume: float = DoubleField()
-    limit_up: float = DoubleField()
-    limit_down: float = DoubleField()
+    name: CharField = CharField()
+    volume: DoubleField = DoubleField()
+    turnover: DoubleField = DoubleField()
+    open_interest: DoubleField = DoubleField()
+    last_price: DoubleField = DoubleField()
+    last_volume: DoubleField = DoubleField()
+    limit_up: DoubleField = DoubleField()
+    limit_down: DoubleField = DoubleField()
 
-    open_price: float = DoubleField()
-    high_price: float = DoubleField()
-    low_price: float = DoubleField()
-    pre_close: float = DoubleField()
+    open_price: DoubleField = DoubleField()
+    high_price: DoubleField = DoubleField()
+    low_price: DoubleField = DoubleField()
+    pre_close: DoubleField = DoubleField()
 
-    bid_price_1: float = DoubleField()
-    bid_price_2: float = DoubleField(null=True)
-    bid_price_3: float = DoubleField(null=True)
-    bid_price_4: float = DoubleField(null=True)
-    bid_price_5: float = DoubleField(null=True)
+    bid_price_1: DoubleField = DoubleField()
+    bid_price_2: DoubleField = DoubleField(null=True)
+    bid_price_3: DoubleField = DoubleField(null=True)
+    bid_price_4: DoubleField = DoubleField(null=True)
+    bid_price_5: DoubleField = DoubleField(null=True)
 
-    ask_price_1: float = DoubleField()
-    ask_price_2: float = DoubleField(null=True)
-    ask_price_3: float = DoubleField(null=True)
-    ask_price_4: float = DoubleField(null=True)
-    ask_price_5: float = DoubleField(null=True)
+    ask_price_1: DoubleField = DoubleField()
+    ask_price_2: DoubleField = DoubleField(null=True)
+    ask_price_3: DoubleField = DoubleField(null=True)
+    ask_price_4: DoubleField = DoubleField(null=True)
+    ask_price_5: DoubleField = DoubleField(null=True)
 
-    bid_volume_1: float = DoubleField()
-    bid_volume_2: float = DoubleField(null=True)
-    bid_volume_3: float = DoubleField(null=True)
-    bid_volume_4: float = DoubleField(null=True)
-    bid_volume_5: float = DoubleField(null=True)
+    bid_volume_1: DoubleField = DoubleField()
+    bid_volume_2: DoubleField = DoubleField(null=True)
+    bid_volume_3: DoubleField = DoubleField(null=True)
+    bid_volume_4: DoubleField = DoubleField(null=True)
+    bid_volume_5: DoubleField = DoubleField(null=True)
 
-    ask_volume_1: float = DoubleField()
-    ask_volume_2: float = DoubleField(null=True)
-    ask_volume_3: float = DoubleField(null=True)
-    ask_volume_4: float = DoubleField(null=True)
-    ask_volume_5: float = DoubleField(null=True)
+    ask_volume_1: DoubleField = DoubleField()
+    ask_volume_2: DoubleField = DoubleField(null=True)
+    ask_volume_3: DoubleField = DoubleField(null=True)
+    ask_volume_4: DoubleField = DoubleField(null=True)
+    ask_volume_5: DoubleField = DoubleField(null=True)
 
     localtime: DateTimeField = DateTimeMillisecondField(null=True)
 
@@ -132,12 +132,12 @@ class DbBarOverview(Model):
 
     id: AutoField = AutoField()
 
-    symbol: str = CharField()
-    exchange: str = CharField()
-    interval: str = CharField()
-    count: int = IntegerField()
-    start: datetime = DateTimeField()
-    end: datetime = DateTimeField()
+    symbol: CharField = CharField()
+    exchange: CharField = CharField()
+    interval: CharField = CharField()
+    count: IntegerField = IntegerField()
+    start: DateTimeField = DateTimeField()
+    end: DateTimeField = DateTimeField()
 
     class Meta:
         database: PeeweeMySQLDatabase = db
@@ -149,11 +149,11 @@ class DbTickOverview(Model):
 
     id: AutoField = AutoField()
 
-    symbol: str = CharField()
-    exchange: str = CharField()
-    count: int = IntegerField()
-    start: datetime = DateTimeField()
-    end: datetime = DateTimeField()
+    symbol: CharField = CharField()
+    exchange: CharField = CharField()
+    count: IntegerField = IntegerField()
+    start: DateTimeField = DateTimeField()
+    end: DateTimeField = DateTimeField()
 
     class Meta:
         database: PeeweeMySQLDatabase = db
