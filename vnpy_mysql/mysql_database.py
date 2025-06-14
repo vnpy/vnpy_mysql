@@ -191,7 +191,8 @@ class MysqlDatabase(BaseDatabase):
             d["interval"] = d["interval"].value
             d.pop("gateway_name")
             d.pop("vt_symbol")
-            d.pop("extra")
+            if "extra" in d:
+                d.pop("extra")
             data.append(d)
 
         # 使用upsert操作将数据更新到数据库中
