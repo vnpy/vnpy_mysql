@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""MySQL数据库接口。"""
 
 from .mysql_database import MysqlDatabase as Database
 

@@ -1,3 +1,5 @@
+"""MySQL的K线与Tick存储实现。"""
+
 from datetime import datetime
 
 from peewee import (
@@ -69,6 +71,7 @@ class DbBarData(Model):
     close_price: DoubleField = DoubleField()
 
     class Meta:
+        """绑定数据库，并以合约、交易所、周期和时间建立唯一索引。"""
         database: PeeweeMySQLDatabase = db
         indexes: tuple = ((("symbol", "exchange", "interval", "datetime"), True),)
 
@@ -123,6 +126,7 @@ class DbTickData(Model):
     localtime: DateTimeField = DateTimeMillisecondField(null=True)
 
     class Meta:
+        """绑定数据库，并以合约、交易所和时间建立唯一索引。"""
         database: PeeweeMySQLDatabase = db
         indexes: tuple = ((("symbol", "exchange", "datetime"), True),)
 
@@ -140,6 +144,7 @@ class DbBarOverview(Model):
     end: DateTimeField = DateTimeField()
 
     class Meta:
+        """绑定数据库，并以合约、交易所和周期建立唯一索引。"""
         database: PeeweeMySQLDatabase = db
         indexes: tuple = ((("symbol", "exchange", "interval"), True),)
 
@@ -156,6 +161,7 @@ class DbTickOverview(Model):
     end: DateTimeField = DateTimeField()
 
     class Meta:
+        """绑定数据库，并以合约和交易所建立唯一索引。"""
         database: PeeweeMySQLDatabase = db
         indexes: tuple = ((("symbol", "exchange"), True),)
 
@@ -164,7 +170,7 @@ class MysqlDatabase(BaseDatabase):
     """Mysql数据库接口"""
 
     def __init__(self) -> None:
-        """"""
+        """连接数据库；若K线表不存在则创建数据表。"""
         self.db: PeeweeMySQLDatabase = db
         self.db.connect()
 
@@ -295,7 +301,7 @@ class MysqlDatabase(BaseDatabase):
         start: datetime,
         end: datetime
     ) -> list[BarData]:
-        """"""
+        """读取K线数据。"""
         s: ModelSelect = (
             DbBarData.select().where(
                 (DbBarData.symbol == symbol)
