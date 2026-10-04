@@ -1,12 +1,15 @@
 """MySQL的K线与Tick存储实现。"""
 
+from collections.abc import Iterable
 from datetime import datetime
 from typing import Protocol, cast
 
 from peewee import (
+    Asc,
     AutoField,
     CharField,
     DateTimeField,
+    Desc,
     DoubleField,
     IntegerField,
     Model,
@@ -16,8 +19,6 @@ from peewee import (
     chunked,
     fn,
 )
-# peewee stubs 未声明 Asc、Desc，运行时模块有这两个排序函数
-from peewee import Asc, Desc  # type: ignore[attr-defined]
 from playhouse.shortcuts import ReconnectMixin
 
 from vnpy.trader.constant import Exchange, Interval
@@ -32,8 +33,7 @@ from vnpy.trader.database import (
 from vnpy.trader.setting import SETTINGS
 
 
-# ReconnectMixin.begin 与 MySQLDatabase.begin 的 stubs 签名不兼容，运行时仍走混入的重连
-class ReconnectMySQLDatabase(ReconnectMixin, PeeweeMySQLDatabase):  # type: ignore[misc]
+class ReconnectMySQLDatabase(ReconnectMixin, PeeweeMySQLDatabase):
     """带有重连混入的MySQL数据库类"""
     pass
 
@@ -49,8 +49,7 @@ db: ReconnectMySQLDatabase = ReconnectMySQLDatabase(
 class DateTimeMillisecondField(DateTimeField):
     """支持毫秒的日期时间戳字段"""
 
-    # peewee stubs 将 Field.get_modifiers 的返回类型标成 None，这里仍返回精度修饰符
-    def get_modifiers(self) -> list[int]:  # type: ignore[override]
+    def get_modifiers(self) -> list[int]:
         """毫秒支持"""
         return [3]
 
@@ -276,7 +275,7 @@ class MysqlDatabase(BaseDatabase):
                 DbBarData.insert_many(c).on_conflict_replace().execute()
 
         # 更新K线汇总数据
-        overview: DbBarOverview = DbBarOverview.get_or_none(
+        overview: DbBarOverview | None = DbBarOverview.get_or_none(
             DbBarOverview.symbol == symbol,
             DbBarOverview.exchange == exchange.value,
             DbBarOverview.interval == interval.value,
@@ -297,7 +296,7 @@ class MysqlDatabase(BaseDatabase):
             overview.start = cast(DateTimeField, min(bars[0].datetime, cast(datetime, overview.start)))
             overview.end = cast(DateTimeField, max(bars[-1].datetime, cast(datetime, overview.end)))
 
-            s: ModelSelect = DbBarData.select().where(
+            s: ModelSelect[DbBarData] = DbBarData.select().where(
                 (DbBarData.symbol == symbol)
                 & (DbBarData.exchange == exchange.value)
                 & (DbBarData.interval == interval.value)
@@ -335,7 +334,7 @@ class MysqlDatabase(BaseDatabase):
                 DbTickData.insert_many(c).on_conflict_replace().execute()
 
         # 更新Tick汇总数据
-        overview: DbTickOverview = DbTickOverview.get_or_none(
+        overview: DbTickOverview | None = DbTickOverview.get_or_none(
             DbTickOverview.symbol == symbol,
             DbTickOverview.exchange == exchange.value,
         )
@@ -354,7 +353,7 @@ class MysqlDatabase(BaseDatabase):
             overview.start = cast(DateTimeField, min(ticks[0].datetime, cast(datetime, overview.start)))
             overview.end = cast(DateTimeField, max(ticks[-1].datetime, cast(datetime, overview.end)))
 
-            s: ModelSelect = DbTickData.select().where(
+            s: ModelSelect[DbTickData] = DbTickData.select().where(
                 (DbTickData.symbol == symbol)
                 & (DbTickData.exchange == exchange.value)
             )
@@ -373,7 +372,7 @@ class MysqlDatabase(BaseDatabase):
         end: datetime
     ) -> list[BarData]:
         """读取K线数据。"""
-        s: ModelSelect = (
+        s: ModelSelect[DbBarData] = (
             DbBarData.select().where(
                 (DbBarData.symbol == symbol)
                 & (DbBarData.exchange == exchange.value)
@@ -384,8 +383,7 @@ class MysqlDatabase(BaseDatabase):
         )
 
         bars: list[BarData] = []
-        db_bar: _BarRow
-        for db_bar in s:
+        for db_bar in cast(Iterable[_BarRow], s):
             bar: BarData = BarData(
                 symbol=db_bar.symbol,
                 exchange=Exchange(db_bar.exchange),
@@ -412,7 +410,7 @@ class MysqlDatabase(BaseDatabase):
         end: datetime
     ) -> list[TickData]:
         """读取TICK数据"""
-        s: ModelSelect = (
+        s: ModelSelect[DbTickData] = (
             DbTickData.select().where(
                 (DbTickData.symbol == symbol)
                 & (DbTickData.exchange == exchange.value)
@@ -422,8 +420,7 @@ class MysqlDatabase(BaseDatabase):
         )
 
         ticks: list[TickData] = []
-        db_tick: _TickRow
-        for db_tick in s:
+        for db_tick in cast(Iterable[_TickRow], s):
             tick: TickData = TickData(
                 symbol=db_tick.symbol,
                 exchange=Exchange(db_tick.exchange),
@@ -519,10 +516,9 @@ class MysqlDatabase(BaseDatabase):
         if data_count and not overview_count:
             self.init_bar_overview()
 
-        s: ModelSelect = DbBarOverview.select()
+        s: ModelSelect[DbBarOverview] = DbBarOverview.select()
         overviews: list[BarOverview] = []
-        overview: BarOverview
-        for overview in s:
+        for overview in cast(Iterable[BarOverview], s):
             overview.exchange = Exchange(overview.exchange)
             overview.interval = Interval(overview.interval)
             overviews.append(overview)
@@ -530,17 +526,16 @@ class MysqlDatabase(BaseDatabase):
 
     def get_tick_overview(self) -> list[TickOverview]:
         """查询数据库中的Tick汇总信息"""
-        s: ModelSelect = DbTickOverview.select()
+        s: ModelSelect[DbTickOverview] = DbTickOverview.select()
         overviews: list = []
-        overview: TickOverview
-        for overview in s:
+        for overview in cast(Iterable[TickOverview], s):
             overview.exchange = Exchange(overview.exchange)
             overviews.append(overview)
         return overviews
 
     def init_bar_overview(self) -> None:
         """初始化数据库中的K线汇总信息"""
-        s: ModelSelect = (
+        s: ModelSelect[DbBarData] = (
             DbBarData.select(
                 DbBarData.symbol,
                 DbBarData.exchange,
@@ -553,8 +548,7 @@ class MysqlDatabase(BaseDatabase):
             )
         )
 
-        data: _BarGroupRow
-        for data in s:
+        for data in cast(Iterable[_BarGroupRow], s):
             overview: DbBarOverview = DbBarOverview()
             overview.symbol = data.symbol
             overview.exchange = data.exchange
