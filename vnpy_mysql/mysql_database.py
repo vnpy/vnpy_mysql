@@ -1,6 +1,7 @@
 """MySQL的K线与Tick存储实现。"""
 
 from datetime import datetime
+from typing import cast
 
 from peewee import (
     AutoField,
@@ -14,9 +15,9 @@ from peewee import (
     ModelDelete,
     chunked,
     fn,
-    Asc,
-    Desc
 )
+# peewee stubs 未声明 Asc、Desc，运行时模块有这两个排序函数
+from peewee import Asc, Desc  # type: ignore[attr-defined]
 from playhouse.shortcuts import ReconnectMixin
 
 from vnpy.trader.constant import Exchange, Interval
@@ -31,7 +32,8 @@ from vnpy.trader.database import (
 from vnpy.trader.setting import SETTINGS
 
 
-class ReconnectMySQLDatabase(ReconnectMixin, PeeweeMySQLDatabase):
+# ReconnectMixin.begin 与 MySQLDatabase.begin 的 stubs 签名不兼容，运行时仍走混入的重连
+class ReconnectMySQLDatabase(ReconnectMixin, PeeweeMySQLDatabase):  # type: ignore[misc]
     """带有重连混入的MySQL数据库类"""
     pass
 
@@ -47,7 +49,8 @@ db = ReconnectMySQLDatabase(
 class DateTimeMillisecondField(DateTimeField):
     """支持毫秒的日期时间戳字段"""
 
-    def get_modifiers(self) -> list:
+    # peewee stubs 将 Field.get_modifiers 的返回类型标成 None，这里仍返回精度修饰符
+    def get_modifiers(self) -> list[int]:  # type: ignore[override]
         """毫秒支持"""
         return [3]
 
@@ -184,7 +187,7 @@ class MysqlDatabase(BaseDatabase):
         bar: BarData = bars[0]
         symbol: str = bar.symbol
         exchange: Exchange = bar.exchange
-        interval: Interval = bar.interval
+        interval: Interval = cast(Interval, bar.interval)
 
         # 将BarData数据转换为字典，并调整时区
         data: list = []
@@ -214,18 +217,18 @@ class MysqlDatabase(BaseDatabase):
 
         if not overview:
             overview = DbBarOverview()
-            overview.symbol = symbol
-            overview.exchange = exchange.value
-            overview.interval = interval.value
-            overview.start = bars[0].datetime
-            overview.end = bars[-1].datetime
-            overview.count = len(bars)
+            overview.symbol = cast(CharField, symbol)
+            overview.exchange = cast(CharField, exchange.value)
+            overview.interval = cast(CharField, interval.value)
+            overview.start = cast(DateTimeField, bars[0].datetime)
+            overview.end = cast(DateTimeField, bars[-1].datetime)
+            overview.count = cast(IntegerField, len(bars))
         elif stream:
-            overview.end = bars[-1].datetime
-            overview.count += len(bars)
+            overview.end = cast(DateTimeField, bars[-1].datetime)
+            overview.count = cast(IntegerField, overview.count + len(bars))
         else:
-            overview.start = min(bars[0].datetime, overview.start)
-            overview.end = max(bars[-1].datetime, overview.end)
+            overview.start = cast(DateTimeField, min(bars[0].datetime, cast(datetime, overview.start)))
+            overview.end = cast(DateTimeField, max(bars[-1].datetime, cast(datetime, overview.end)))
 
             s: ModelSelect = DbBarData.select().where(
                 (DbBarData.symbol == symbol)
@@ -271,17 +274,17 @@ class MysqlDatabase(BaseDatabase):
 
         if not overview:
             overview = DbTickOverview()
-            overview.symbol = symbol
-            overview.exchange = exchange.value
-            overview.start = ticks[0].datetime
-            overview.end = ticks[-1].datetime
-            overview.count = len(ticks)
+            overview.symbol = cast(CharField, symbol)
+            overview.exchange = cast(CharField, exchange.value)
+            overview.start = cast(DateTimeField, ticks[0].datetime)
+            overview.end = cast(DateTimeField, ticks[-1].datetime)
+            overview.count = cast(IntegerField, len(ticks))
         elif stream:
-            overview.end = ticks[-1].datetime
-            overview.count += len(ticks)
+            overview.end = cast(DateTimeField, ticks[-1].datetime)
+            overview.count = cast(IntegerField, overview.count + len(ticks))
         else:
-            overview.start = min(ticks[0].datetime, overview.start)
-            overview.end = max(ticks[-1].datetime, overview.end)
+            overview.start = cast(DateTimeField, min(ticks[0].datetime, cast(datetime, overview.start)))
+            overview.end = cast(DateTimeField, max(ticks[-1].datetime, cast(datetime, overview.end)))
 
             s: ModelSelect = DbTickData.select().where(
                 (DbTickData.symbol == symbol)
